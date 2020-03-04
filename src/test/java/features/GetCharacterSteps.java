@@ -10,7 +10,7 @@ public class GetCharacterSteps{
     public void iPerformGetOperationsFor(String url) throws Throwable {
     }
     @And("^I perform Get for the Character number \"([^\"]*)\"$")
-    public void iPerformGetForTheCharacterNumber(String ch) throws Throwable {
+    public void iPerformGetForTheCharacterNumber(Integer ch) throws Throwable {
       GetMethods.GetMethodCharacter(ch);
     }
     @Then("^I should see Character's name as \"([^\"]*)\"$")
@@ -18,7 +18,7 @@ public class GetCharacterSteps{
     }
 
     @Then("^I should see verify GET parameter$")
-    public void ıShouldSeeVerifyGETParameter() {
+    public void iShouldSeeVerifyGETParameter() {
       GetMethods.CharacterQueryParam();
     }
 }

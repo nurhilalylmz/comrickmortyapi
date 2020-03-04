@@ -1,24 +1,30 @@
 package features;
 
-
-import BasePackage.BaseClass;
-import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
+import jdk.nashorn.internal.runtime.logging.DebugLogger;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Test;
+
 import java.util.List;
-import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
+
+import static io.restassured.RestAssured.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 
-public class GetMethods extends BaseClass {
+public class GetMethods {
 
-    public static void GetMethodCharacter(String character){
-        given().contentType(JSON)
-                .when().get(baseURI,"character/%s",character).then()
+    @Test
+    public static void GetMethodCharacter(Integer character){
+        Response response=given().contentType(ContentType.JSON)
+                .when().get(String.format(baseURI+"/character/"+character ))
+                .then()
                 .body("name",is("Morty Smith"))
-                .statusCode(200);
+                .statusCode(200).extract().response();
+        JsonPath jp = new JsonPath(response.asString());
+        System.out.println(jp.prettyPrint());
     }
 
 /*    Senaryo 2:
@@ -45,26 +51,30 @@ public class GetMethods extends BaseClass {
         given()
                 .contentType(ContentType.JSON)
                 .queryParam("name","rick")
-                .queryParam("status","alive");
+                .queryParam("status","alive").
         when()
-                .get(baseURI, "/character").then()
+                .get(String.format("https://rickandmortyapi.com/api/character")).then()
                 .statusCode(200)
                 .body("results[0].gender",equalTo("Male"))
                 .body("results[0].species",equalTo("Human"))
                 .body("results[0].id",equalTo(1));
     }
+//
+//    public String TestExample() {
+//        List<String> deneme=null;
+//       String value= deneme.add("Kalem");
+//        return value;
+//    }
 
-    private static List when() {
-    }
-
+    @Test
     public static void Episode(){
-        List<String> names = RestAssured.when().get(baseURI, "/episode")
+        List<String> names = when().get(String.format("https://rickandmortyapi.com/api/episode"))
                 .then().extract().jsonPath()
                 .getList("results.name");
         Assert.assertTrue(names.contains("Get Schwifty"));
         System.out.println(names.size());
         System.out.println(names);
-        List<String> episodes = RestAssured.when().get(baseURI, "/episode")
+        List<String> episodes = when().get(String.format("https://rickandmortyapi.com/api/episode"))
                 .then().extract().jsonPath()
                 .getList("results.episode");
         Assert.assertTrue(episodes.contains("S02E05"));
@@ -73,7 +83,7 @@ public class GetMethods extends BaseClass {
     }
     public static void Location(){
         when()
-                .get(baseURI, "/episode/location/3")
+                .get(String.format("https://rickandmortyapi.com/api/location/3"))
                 .then()
                 .body("type", Matchers.not("Space")).statusCode(200);
     }
